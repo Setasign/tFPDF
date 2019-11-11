@@ -36,3 +36,20 @@ or you can include the following in your composer.json file:
     }
 }
 ```
+
+## Usage
+
+Notice that tFPDF is not name-spaced. You can extend the class this way:
+
+```php 
+    namespace your\namespace;
+    
+    class Document extends \tFPDF
+```
+
+or create an instance this way:
+
+
+```php 
+    $pdf = new \tFPDF();
+```
