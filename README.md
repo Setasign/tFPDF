@@ -36,3 +36,18 @@ or you can include the following in your composer.json file:
     }
 }
 ```
+
+## Usage
+
+The alias is `\tFPDF`. You may extend the class by
+
+```php 
+    class Document extends \tFPDF
+```
+
+or create a new one like this:
+
+
+```php 
+    $pdf = new \tFPDF();
+```
