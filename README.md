@@ -39,13 +39,13 @@ or you can include the following in your composer.json file:
 
 ## Usage
 
-The alias is `\tFPDF`. You may extend the class by
+Notice that tFPDF is not name-spaced. You can extend the class this way:
 
 ```php 
     class Document extends \tFPDF
 ```
 
-or create a new one like this:
+or create an instance this way:
 
 
 ```php 
