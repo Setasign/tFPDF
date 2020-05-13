@@ -1,3 +1,2 @@
-font/unifont/*.dat
-font/unifont/*.php
+font/unifont/*.*.*
 vendor
