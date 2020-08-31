@@ -2,14 +2,14 @@
 /*******************************************************************************
 * tFPDF (based on FPDF 1.82)                                                   *
 *                                                                              *
-* Version:  1.31                                                               *
-* Date:     2019-01-24                                                         *
+* Version:  1.32                                                               *
+* Date:     2020-08-29                                                         *
 * Authors:  Ian Back <ianb@bpm1.com>                                           *
 *           Tycho Veltmeijer <tfpdf@tychoveltmeijer.nl> (versions 1.30+)       *
 * License:  LGPL                                                               *
 *******************************************************************************/
 
-define('tFPDF_VERSION','1.31');
+define('tFPDF_VERSION','1.32');
 
 class tFPDF
 {
@@ -649,6 +649,7 @@ function Link($x, $y, $w, $h, $link)
 function Text($x, $y, $txt)
 {
 	// Output a string
+	$txt = (string)$txt;
 	if(!isset($this->CurrentFont))
 		$this->Error('No font has been set');
 	if ($this->unifontSubset)
@@ -676,6 +677,7 @@ function AcceptPageBreak()
 function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='')
 {
 	// Output a cell
+	$txt = (string)$txt;
 	$k = $this->k;
 	if($this->y+$h>$this->PageBreakTrigger && !$this->InHeader && !$this->InFooter && $this->AcceptPageBreak())
 	{
@@ -793,7 +795,7 @@ function MultiCell($w, $h, $txt, $border=0, $align='J', $fill=false)
 		$w = $this->w-$this->rMargin-$this->x;
 	$wmax = ($w-2*$this->cMargin);
 	//$wmax = ($w-2*$this->cMargin)*1000/$this->FontSize;
-	$s = str_replace("\r",'',$txt);
+	$s = str_replace("\r",'',(string)$txt);
 	if ($this->unifontSubset) {
 		$nb=mb_strlen($s, 'utf-8');
 		while($nb>0 && mb_substr($s,$nb-1,1,'utf-8')=="\n")	$nb--;
@@ -941,7 +943,7 @@ function Write($h, $txt, $link='')
 	$cw = &$this->CurrentFont['cw'];
 	$w = $this->w-$this->rMargin-$this->x;
 	$wmax = ($w-2*$this->cMargin);
-	$s = str_replace("\r",'',$txt);
+	$s = str_replace("\r",'',(string)$txt);
 	if ($this->unifontSubset) {
 		$nb = mb_strlen($s, 'UTF-8');
 		if($nb==1 && $s==" ") {
