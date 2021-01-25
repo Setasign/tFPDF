@@ -1,11 +1,15 @@
 {
-    "name": "setasign/tfpdf",
+    "name": "copiri/tfpdf",
     "homepage": "http://fpdf.org/en/script/script92.php",
-    "description": "This class is a modified version of FPDF that adds UTF-8 support. As of version 1.31 it is based on FPDF 1.82. Before it was based on FPDF 1.7.",
+    "description": "This package is a modified version of tFPDF that adds error handling. It was forked from the Setasign/tFPDF repo at version 1.32 (which is based on FPDF v1.82).  Note that error handling has been addded *sporadically* and is not considered complete... it's just better than the original.",
     "type": "library",
-    "keywords": ["pdf", "fpdf", "unicode", "tfpdf"],
+    "keywords": ["pdf", "fpdf", "unicode", "tfpdf", "ctfpdf"],
     "license": "LGPL-2.1",
     "authors": [
+        {
+            "name": "Jeremy Barnes",
+            "role": "Janitor"
+        },
         {
             "name": "Ian Back"
         },
