@@ -1,5 +1,5 @@
 {
-    "name": "copiri/tfpdf",
+    "name": "copiri/ctfpdf",
     "homepage": "http://fpdf.org/en/script/script92.php",
     "description": "This package is a modified version of tFPDF that adds error handling. It was forked from the Setasign/tFPDF repo at version 1.32 (which is based on FPDF v1.82).  Note that error handling has been addded *sporadically* and is not considered complete... it's just better than the original.",
     "type": "library",
