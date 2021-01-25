@@ -10,7 +10,7 @@
 * License:  LGPL                                                               *
 *******************************************************************************/
 
-define('tFPDF_VERSION','1.32');
+define('ctFPDF_VERSION','0.1');
 
 class tFPDF
 {
@@ -2266,7 +2266,7 @@ protected function _putresources()
 
 protected function _putinfo()
 {
-	$this->metadata['Producer'] = 'tFPDF '.tFPDF_VERSION;
+	$this->metadata['Producer'] = 'tFPDF '.ctFPDF_VERSION;
 	$this->metadata['CreationDate'] = 'D:'.@date('YmdHis');
 	foreach($this->metadata as $key=>$value)
 		$this->_put('/'.$key.' '.$this->_textstring($value));
