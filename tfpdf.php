@@ -1,10 +1,11 @@
 <?php
 /*******************************************************************************
-* tFPDF (based on FPDF 1.82)                                                   *
+* ctFPDF (based on tFPDF 1.32)                                                 *
 *                                                                              *
-* Version:  1.32                                                               *
-* Date:     2020-08-29                                                         *
-* Authors:  Ian Back <ianb@bpm1.com>                                           *
+* Version:  0.1                                                                *
+* Date:     2021-01-25                                                         *
+* Authors:  Jeremy Barnes                                                      *
+*           Ian Back <ianb@bpm1.com> (version 1.32)                            *
 *           Tycho Veltmeijer <tfpdf@tychoveltmeijer.nl> (versions 1.30+)       *
 * License:  LGPL                                                               *
 *******************************************************************************/
@@ -1087,7 +1088,10 @@ function Image($file, $x=null, $y=null, $w=0, $h=0, $type='', $link='')
 		$mtd = '_parse'.$type;
 		if(!method_exists($this,$mtd))
 			$this->Error('Unsupported image type: '.$type);
-		$info = $this->$mtd($file);
+		
+		try { $info = $this->$mtd($file); }
+		catch (Exception $e) { throw new Exception('Caught tFPDF Error in ' . $mtd . ': ' . $e->getMessage()); }
+		
 		$info['i'] = count($this->images)+1;
 		$this->images[$file] = $info;
 	}
@@ -1462,9 +1466,11 @@ protected function _parsepng($file)
 {
 	// Extract info from a PNG file
 	$f = fopen($file,'rb');
-	if(!$f)
-		$this->Error('Can\'t open image file: '.$file);
-	$info = $this->_parsepngstream($f,$file);
+	if(!$f) $this->Error('Can\'t open image file: '.$file);
+	
+	try { $info = $this->_parsepngstream($f,$file); }
+	catch (Exception $e) { throw new Exception('Caught tFPDF Error in _parsepngstream: ' . $e->getMessage()); }
+	
 	fclose($f);
 	return $info;
 }
