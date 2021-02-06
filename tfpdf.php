@@ -10,7 +10,8 @@
 * License:  LGPL                                                               *
 *******************************************************************************/
 
-define('ctFPDF_VERSION','0.1');
+define('ctFPDF_PRODUCER_NAME', 'Acacia Book Generator');
+define('ctFPDF_VERSION','1.0');
 
 class tFPDF
 {
@@ -2266,7 +2267,7 @@ protected function _putresources()
 
 protected function _putinfo()
 {
-	$this->metadata['Producer'] = 'tFPDF '.ctFPDF_VERSION;
+	$this->metadata['Producer'] = ctFPDF_PRODUCER_NAME . ' v' . ctFPDF_VERSION;
 	$this->metadata['CreationDate'] = 'D:'.@date('YmdHis');
 	foreach($this->metadata as $key=>$value)
 		$this->_put('/'.$key.' '.$this->_textstring($value));
@@ -2377,8 +2378,6 @@ protected function UTF8StringToArray($str) {
    }
    return $out;
 }
-
-
 
 }
 ?>
