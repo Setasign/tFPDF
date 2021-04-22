@@ -219,7 +219,7 @@ function SetDisplayMode($zoom, $layout='default')
 		$this->ZoomMode = $zoom;
 	else
 		$this->Error('Incorrect zoom display mode: '.$zoom);
-	if($layout=='single' || $layout=='continuous' || $layout=='two' || $layout=='default')
+	if($layout=='single' || $layout=='continuous' || $layout=='two' || $layout=='twopageleft' || $layout=='twopageright' || $layout=='twocolleft' || $layout=='twocolright' || $layout=='default')
 		$this->LayoutMode = $layout;
 	else
 		$this->Error('Incorrect layout display mode: '.$layout);
@@ -2292,6 +2292,14 @@ protected function _putcatalog()
 		$this->_put('/PageLayout /OneColumn');
 	elseif($this->LayoutMode=='two')
 		$this->_put('/PageLayout /TwoColumnLeft');
+	elseif($this->LayoutMode=='twocolleft')
+		$this->_put('/PageLayout /TwoColumnLeft');
+	elseif($this->LayoutMode=='twocolright')
+		$this->_put('/PageLayout /TwoColumnRightt');
+	elseif($this->LayoutMode=='twopageleft')
+		$this->_put('/PageLayout /TwoPageLeft');
+	elseif($this->LayoutMode=='twopageright')
+		$this->_put('/PageLayout /TwoPageRight');
 }
 
 protected function _putheader()
