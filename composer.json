@@ -1,7 +1,7 @@
 {
     "name": "setasign/tfpdf",
     "homepage": "http://fpdf.org/en/script/script92.php",
-    "description": "This class is a modified version of FPDF that adds UTF-8 support. As of version 1.31 it is based on FPDF 1.82. Before it was based on FPDF 1.7.",
+    "description": "This class is a modified version of FPDF that adds UTF-8 support. The latest version is based on FPDF 1.85.",
     "type": "library",
     "keywords": ["pdf", "fpdf", "unicode", "tfpdf"],
     "license": "LGPL-2.1",
