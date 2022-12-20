@@ -25,14 +25,14 @@ when using Write() etc.
 
 If you're using Composer to manage dependencies, you can use
 
-    $ composer require setasign/tfpdf:1.32
+    $ composer require setasign/tfpdf:1.33
 
 or you can include the following in your composer.json file:
 
 ```json
 {
     "require": {
-        "setasign/tfpdf": "1.32"
+        "setasign/tfpdf": "1.33"
     }
 }
 ```
