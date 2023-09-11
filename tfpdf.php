@@ -264,6 +264,13 @@ function SetCreator($creator, $isUTF8=false)
 	$this->metadata['Creator'] = $isUTF8 ? $creator : $this->_UTF8encode($creator);
 }
 
+function SetCreationDate($creationdate)
+{
+        // Creation Date of document
+        $date = @date('YmdHisO',strtotime($creationdate));
+        $this->metadata['CreationDate'] = 'D:'.substr($date,0,-2)."'".substr($date,-2)."'";
+}
+
 function AliasNbPages($alias='{nb}')
 {
 	// Define an alias for total number of pages
@@ -2254,10 +2261,12 @@ protected function _putresources()
 
 protected function _putinfo()
 {
-	$date = @date('YmdHisO',$this->CreationDate);
-	$this->metadata['CreationDate'] = 'D:'.substr($date,0,-2)."'".substr($date,-2)."'";
-	foreach($this->metadata as $key=>$value)
-		$this->_put('/'.$key.' '.$this->_textstring($value));
+    $date = @date('YmdHisO',$this->CreationDate);
+    if(!isset($this->metadata['CreationDate'])) { 
+        $this->metadata['CreationDate'] = 'D:'.substr($date,0,-2)."'".substr($date,-2)."'";
+    }
+    foreach($this->metadata as $key=>$value)
+        $this->_put('/'.$key.' '.$this->_textstring($value));
 }
 
 protected function _putcatalog()
