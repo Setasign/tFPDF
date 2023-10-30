@@ -1068,36 +1068,72 @@ function Ln($h=null)
 		$this->y += $h;
 }
 
-function Image($file, $x=null, $y=null, $w=0, $h=0, $type='', $link='')
-{
 	// Put an image on the page
-	if($file=='')
-		$this->Error('Image file name is empty');
-	if(!isset($this->images[$file]))
-	{
-		// First use of this image, get info
-		if($type=='')
-		{
-			$pos = strrpos($file,'.');
-			if(!$pos)
-				$this->Error('Image file has no extension and no type was specified: '.$file);
-			$type = substr($file,$pos+1);
+function Image($file_name, $x = null, $y = null, $w = 0, $h = 0, $type = '', $link = '')
+{
+    // Confirm that we have a file to write.  If not, throw an error.
+	if ('' == $file_name) $this->Error('Error writing image: file name name is empty!');
+	
+    /**
+     * AWS Presigned URLs have query data appended to the end of the file name 
+     * (Details: https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3/presign.html). 
+     * In order to discern the image type correctly, we first need to remove the  
+     * trailing `?` and all following data.
+     * 
+     * NOTE :: this also has the benefit of storing the actual file name for future 
+     *         reference, and not the (extensive) AWS PSU reference data.
+     * 
+     * NOTE :: it is *possible* that this function might inadvertently cut off a part of  
+     *         the file name.  However, since web-based filenames should not use the  
+     *         reserved question mark character (instead, they should be URL-encoded),  
+     *         this is seen as an acceptable risk.
+     */
+    
+    // Determine if there is a question mark in the file name.  If so...
+    if (false !== strrpos($file_name, '?')) {
+        // Trim the file name to be the start of the string up to the position 
+        // before the question mark.
+        $file_name = substr($file_name, 0, strrpos($file_name, '?') - 1)
+    }
+    
+	// If this image has already been processed and placed in the `images` array, use that.
+	if (isset($this->images[$file_name])) $info = $this->images[$file_name];
+	// Otherwise, we need to process it and put it on file.
+	else {
+		// If we don't have an image type, get it from the file name
+		if ('' == $type) {
+		    // Figure out where the dot is...
+			$pos = strrpos($file_name, '.');
+			
+			// If there is no dot, throw an error
+			if (!$pos) $this->Error('Image file name [ ' . $file_name . ' ] has no extension and no type was specified.');
+			
+			$type = substr($file_name, $pos + 1);
 		}
-		$type = strtolower($type);
-		if($type=='jpeg')
-			$type = 'jpg';
-		$mtd = '_parse'.$type;
-		if(!method_exists($this,$mtd))
-			$this->Error('Unsupported image type: '.$type);
 		
-		try { $info = $this->$mtd($file); }
+		// Lowercase the type for simplicity
+		$type = strtolower($type);
+		
+		// .jpeg and .jpg are the same thing, coalesce to the PHP-used name.
+		if ('jpeg' == $type) $type = 'jpg';
+		
+		// Create the PHP method name (i.e. `_parsejpg()`, etc.)
+		$mtd = '_parse' . $type;
+		
+		// If there isn't a PHP method to parse this image type, throw an error.
+		if (!method_exists($this, $mtd)) $this->Error('Unsupported image type: '.$type);
+		
+		// Attempt to parse the image for storage
+		try { $info = $this->$mtd($file_name); }
+		// Catch any exception thrown
 		catch (Exception $e) { throw new Exception('Caught tFPDF Error in ' . $mtd . ': ' . $e->getMessage()); }
 		
-		$info['i'] = count($this->images)+1;
-		$this->images[$file] = $info;
+		// Save the image number for reference
+		$info['i'] = count($this->images) + 1;
+		
+		// Add the new image to the list of images
+		$this->images[$file_name] = $info;
 	}
-	else
-		$info = $this->images[$file];
 
 	// Automatic width and height calculation if needed
 	if($w==0 && $h==0)
