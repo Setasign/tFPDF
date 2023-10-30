@@ -1093,7 +1093,7 @@ function Image($file_name, $x = null, $y = null, $w = 0, $h = 0, $type = '', $li
     if (false !== strrpos($file_name, '?')) {
         // Trim the file name to be the start of the string up to the position 
         // before the question mark.
-        $file_name = substr($file_name, 0, strrpos($file_name, '?') - 1)
+        $file_name = substr($file_name, 0, strrpos($file_name, '?'));
     }
     
 	// If this image has already been processed and placed in the `images` array, use that.
