@@ -2,8 +2,8 @@
 /*******************************************************************************
 * tFPDF (based on FPDF 1.85)                                                   *
 *                                                                              *
-* Version:  1.33                                                               *
-* Date:     2022-12-20                                                         *
+* Version:  1.34                                                               *
+* Date:     2026-10-11                                                         *
 * Authors:  Ian Back <ianb@bpm1.com>                                           *
 *           Tycho Veltmeijer <tfpdf@tychoveltmeijer.nl> (versions 1.30+)       *
 * License:  LGPL                                                               *
@@ -11,7 +11,7 @@
 
 class tFPDF
 {
-const VERSION = '1.33';
+const VERSION = '1.34';
 protected $unifontSubset;
 protected $page;               // current page number
 protected $n;                  // current object number
@@ -1773,6 +1773,7 @@ protected function _putpages()
 
 protected function _putfonts()
 {
+	$nIdentityCMAP = 0;
 	foreach($this->FontFiles as $file=>$info)
 	{
 		if (!isset($info['type']) || $info['type']!='TTF') {
@@ -1888,6 +1889,8 @@ protected function _putfonts()
 		}
 		// TrueType embedded SUBSETS or FULL
 		else if ($type=='TTF') {
+			if($nIdentityCMAP==0)
+				$nIdentityCMAP = $this->_putidentitytounicodecmap();
 			$this->fonts[$k]['n']=$this->n+1;
 //			require_once($this->fontpath.'unifont/ttfonts.php');
 			$ttf = new TTFontFile();
@@ -1908,7 +1911,7 @@ protected function _putfonts()
 			$this->_put('/BaseFont /'.$fontname.'');
 			$this->_put('/Encoding /Identity-H'); 
 			$this->_put('/DescendantFonts ['.($this->n + 1).' 0 R]');
-			$this->_put('/ToUnicode '.($this->n + 2).' 0 R');
+			$this->_put('/ToUnicode '.$nIdentityCMAP.' 0 R');
 			$this->_put('>>');
 			$this->_put('endobj');
 
@@ -1918,42 +1921,14 @@ protected function _putfonts()
 			$this->_put('<</Type /Font');
 			$this->_put('/Subtype /CIDFontType2');
 			$this->_put('/BaseFont /'.$fontname.'');
-			$this->_put('/CIDSystemInfo '.($this->n + 2).' 0 R'); 
-			$this->_put('/FontDescriptor '.($this->n + 3).' 0 R');
+			$this->_put('/CIDSystemInfo '.($this->n + 1).' 0 R'); 
+			$this->_put('/FontDescriptor '.($this->n + 2).' 0 R');
 			if (isset($font['desc']['MissingWidth'])){
 				$this->_out('/DW '.$font['desc']['MissingWidth'].''); 
 			}
-
 			$this->_putTTfontwidths($font, $ttf->maxUni);
-
-			$this->_put('/CIDToGIDMap '.($this->n + 4).' 0 R');
+			$this->_put('/CIDToGIDMap '.($this->n + 3).' 0 R');
 			$this->_put('>>');
-			$this->_put('endobj');
-
-			// ToUnicode
-			$this->_newobj();
-			$toUni = "/CIDInit /ProcSet findresource begin\n";
-			$toUni .= "12 dict begin\n";
-			$toUni .= "begincmap\n";
-			$toUni .= "/CIDSystemInfo\n";
-			$toUni .= "<</Registry (Adobe)\n";
-			$toUni .= "/Ordering (UCS)\n";
-			$toUni .= "/Supplement 0\n";
-			$toUni .= ">> def\n";
-			$toUni .= "/CMapName /Adobe-Identity-UCS def\n";
-			$toUni .= "/CMapType 2 def\n";
-			$toUni .= "1 begincodespacerange\n";
-			$toUni .= "<0000> <FFFF>\n";
-			$toUni .= "endcodespacerange\n";
-			$toUni .= "1 beginbfrange\n";
-			$toUni .= "<0000> <FFFF> <0000>\n";
-			$toUni .= "endbfrange\n";
-			$toUni .= "endcmap\n";
-			$toUni .= "CMapName currentdict /CMap defineresource pop\n";
-			$toUni .= "end\n";
-			$toUni .= "end";
-			$this->_put('<</Length '.(strlen($toUni)).'>>');
-			$this->_putstream($toUni);
 			$this->_put('endobj');
 
 			// CIDSystemInfo dictionary
@@ -2012,6 +1987,39 @@ protected function _putfonts()
 			$this->$mtd($font);
 		}
 	}
+}
+
+protected function _putidentitytounicodecmap()
+{
+	$s = "/CIDInit /ProcSet findresource begin\n";
+	$s .= "12 dict begin\n";
+	$s .= "begincmap\n";
+	$s .= "/CIDSystemInfo\n";
+	$s .= "<</Registry (Adobe)\n";
+	$s .= "/Ordering (UCS)\n";
+	$s .= "/Supplement 0\n";
+	$s .= ">> def\n";
+	$s .= "/CMapName /Adobe-Identity-UCS def\n";
+	$s .= "/CMapType 2 def\n";
+	$s .= "1 begincodespacerange\n";
+	$s .= "<0000> <FFFF>\n";
+	$s .= "endcodespacerange\n";
+	// One range per high byte: a bfrange must not cross a first-byte boundary (ISO 32000-1, 9.10.3),
+	// and a block holds at most 100 entries (fix by Stephan Biegel).
+	for ($start = 0; $start < 256; $start += 100) {
+		$count = min(100, 256 - $start);
+		$s .= $count." beginbfrange\n";
+		for ($hi = $start; $hi < $start + $count; $hi++) {
+			$s .= sprintf("<%02X00> <%02XFF> <%02X00>\n", $hi, $hi, $hi);
+		}
+		$s .= "endbfrange\n";
+	}
+	$s .= "endcmap\n";
+	$s .= "CMapName currentdict /CMap defineresource pop\n";
+	$s .= "end\n";
+	$s .= "end";
+	$this->_putstreamobject($s);
+	return $this->n;
 }
 
 protected function _putTTfontwidths($font, $maxUni) {

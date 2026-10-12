@@ -10,17 +10,17 @@ $pdf = new tFPDF();
 $pdf->AddPage();
 
 // Add a Unicode font (uses UTF-8)
-$pdf->AddFont('DejaVu','','DejaVuSansCondensed.ttf',true);
-$pdf->SetFont('DejaVu','',14);
+$pdf->AddFont('DejaVu', '', 'DejaVuSansCondensed.ttf', true);
+$pdf->SetFont('DejaVu', '', 14);
 
 // Load a UTF-8 string from a file and print it
 $txt = file_get_contents('HelloWorld.txt');
-$pdf->Write(8,$txt);
+$pdf->Write(8, $txt);
 
 // Select a standard font (uses windows-1252)
-$pdf->SetFont('Arial','',14);
+$pdf->SetFont('Arial', '', 14);
 $pdf->Ln(10);
-$pdf->Write(5,'The file size of this PDF is only 13 KB.');
+$pdf->Write(5, 'The file size of this PDF is only 14 KB.');
 
 $pdf->Output();
 ?>
